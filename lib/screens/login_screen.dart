@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'api_service_screen.dart';
 import 'main_screen.dart';
 
 /// Page d'authentification initiale de l'application.
 ///
 /// Comprend :
-/// - Un champ identifiant avec validation
+/// - Le design original du Portail CV & Profil (Magbadi Mandey Clement)
+/// - Un champ email avec validation connecté à l'API
 /// - Un champ mot de passe masqué avec bascule d'affichage
-/// - Un bouton de connexion interactif
+/// - La connexion via ApiService.login
+/// - Une boîte de dialogue d'inscription via ApiService.register
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -17,47 +20,207 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: 'clement');
-  final _passwordController = TextEditingController(text: '123456');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+  // Connexion via ApiService.login
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // Simulation d'une latence d'authentification naturelle
-      await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await ApiService.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
       if (!mounted) return;
-
       setState(() {
         _isLoading = false;
       });
 
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result['message']?.toString() ??
+                  'Bienvenue, ${_emailController.text.trim()} !',
+            ),
+            backgroundColor: AppTheme.secondaryColor,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'].toString()),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bienvenue, ${_usernameController.text.trim()} !'),
-          backgroundColor: AppTheme.secondaryColor,
+          content: Text('Erreur de connexion au serveur : $e'),
+          backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
         ),
       );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
     }
+  }
+
+  // Boîte de dialogue pour créer un compte (POST /accounts/register)
+  void _ouvrirDialogueInscription() {
+    final TextEditingController regEmailController = TextEditingController();
+    final TextEditingController regPasswordController = TextEditingController();
+    bool isRegistering = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                'Créer un compte',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textDark,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: regEmailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: AppTheme.primaryLight,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: regPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Mot de passe (min. 6 caractères)',
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: AppTheme.primaryLight,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isRegistering
+                      ? null
+                      : () => Navigator.pop(dialogContext),
+                  child: const Text('Annuler'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: isRegistering
+                      ? null
+                      : () async {
+                          setDialogState(() => isRegistering = true);
+                          try {
+                            final result = await ApiService.register(
+                              email: regEmailController.text,
+                              password: regPasswordController.text,
+                            );
+
+                            if (!mounted) return;
+
+                            if (result['success'] == true) {
+                              Navigator.pop(dialogContext);
+                              _emailController.text =
+                                  regEmailController.text.trim();
+                              ScaffoldMessenger.of(this.context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Compte créé ! Vous pouvez vous connecter.',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            } else {
+                              setDialogState(() => isRegistering = false);
+                              ScaffoldMessenger.of(this.context).showSnackBar(
+                                SnackBar(
+                                  content: Text(result['message'].toString()),
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (!mounted) return;
+                            setDialogState(() => isRegistering = false);
+                            ScaffoldMessenger.of(this.context).showSnackBar(
+                              SnackBar(
+                                content: Text('Erreur : $e'),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        },
+                  child: isRegistering
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('S\'inscrire'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -77,7 +240,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -168,9 +332,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Champ Identifiant
+                            // Champ Email
                             const Text(
-                              'Identifiant',
+                              'Email',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -179,15 +343,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
-                              controller: _usernameController,
-                              keyboardType: TextInputType.text,
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
-                                hintText: 'Entrez votre identifiant',
-                                prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryLight),
+                                hintText: 'Entrez votre adresse email',
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: AppTheme.primaryLight,
+                                ),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Veuillez saisir votre identifiant';
+                                  return 'Veuillez saisir votre email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Veuillez saisir un email valide';
                                 }
                                 return null;
                               },
@@ -209,10 +379,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
                                 hintText: 'Entrez votre mot de passe',
-                                prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryLight),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  color: AppTheme.primaryLight,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                    _obscurePassword
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
                                     color: AppTheme.textMuted,
                                   ),
                                   onPressed: () {
@@ -251,11 +426,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                         width: 22,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2.5,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
                                         ),
                                       )
                                     : const Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.login_rounded),
                                           SizedBox(width: 8),
@@ -269,6 +447,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ],
                                       ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Bouton « Créer un compte »
+                            TextButton(
+                              onPressed: _isLoading
+                                  ? null
+                                  : _ouvrirDialogueInscription,
+                              child: const Text(
+                                'Créer un compte',
+                                style: TextStyle(
+                                  color: AppTheme.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ],
