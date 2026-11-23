@@ -19,6 +19,12 @@
 
 ---
 
+## 🎥 Démonstration Vidéo
+
+👉 **[Regarder la vidéo complète de la démo sur Google Drive](https://drive.google.com/file/d/1iHZg-fO8-dYtmE8TZ5euYogZEnTX7X3Z/view?usp=sharing).**
+
+---
+
 ## 📸 Aperçu de l'Application (Captures d'Écran)
 
 <div align="center">
@@ -42,24 +48,24 @@ Cette application mobile développée avec le framework **Flutter** met en valeu
 Elle répond fidèlement aux exigences fonctionnelles et graphiques d'une application professionnelle moderne :
 
 1. **Page de Connexion (`LoginScreen`)** :
-   - Formulaire complet avec champ Identifiant et champ Mot de passe masqué (avec icône interactive pour masquer/afficher).
-   - Validation dynamique des entrées.
-   - Bouton stylé « Se connecter » avec animation de chargement.
-   - Identifiants pré-remplis pour tester rapidement (`clement` / `123456`).
+  - Formulaire complet avec champ Identifiant et champ Mot de passe masqué (avec icône interactive pour masquer/afficher).
+  - Validation dynamique des entrées.
+  - Bouton stylé « Se connecter » avec animation de chargement.
+  - Identifiants pré-remplis pour tester rapidement (`clement` / `123456`).
 
 2. **Page d'Accueil - CV Complet (`CvScreen`)** :
-   - **En-tête de Profil** : Photo réelle, nom complet, badge officiel `ETUDIANT`.
-   - **Formation** : Licence en Réseau Système et Télécommunication.
-   - **Expériences & Projets** :
-     - Stage professionnel chez **Global Technology** (Réseau et Systèmes).
-     - Projet : **Application de gestion d'une école** (solution logicielle complète).
-   - **Compétences Techniques** : Developer Flutter, Développement Web, Python avec barres de progression.
-   - **Compétences Linguistiques** : Français (Maîtrise), Lingala (Natif), English (Intermédiaire).
-   - **Centres d'intérêt** : Football, le Réseau et Lire.
+- **En-tête de Profil** : Photo réelle, nom complet, badge officiel `ETUDIANT`.
+  - **Formation** : Licence en Réseau Système et Télécommunication.
+  - **Expériences & Projets** :
+    - Stage professionnel chez **Global Technology** (Réseau et Systèmes).
+    - Projet : **Application de gestion d'une école** (solution logicielle complète).
+  - **Compétences Techniques** : Developer Flutter, Développement Web, Python avec barres de progression.
+  - **Compétences Linguistiques** : Français (Maîtrise), Lingala (Natif), English (Intermédiaire).
+  - **Centres d'intérêt** : Football, le Réseau et Lire.
 
 3. **Page Famille (`FamilyScreen`)** :
-   - Présentation interactive des membres de la famille : nom, photo locale embarquée, lien de parenté, profession et description.
-   - **Bascule d'affichage dynamique** : Possibilité d'alterner en un clic entre la vue **ListView** et la vue **GridView**.
+- Présentation interactive des membres de la famille : nom, photo locale embarquée, lien de parenté, profession et description.
+  - **Bascule d'affichage dynamique** : Possibilité d'alterner en un clic entre la vue **ListView** et la vue **GridView**.
 
 <div align="center">
 
@@ -76,17 +82,17 @@ Elle répond fidèlement aux exigences fonctionnelles et graphiques d'une applic
 </div>
 
 4. **Page Contact (`ContactScreen`)** :
-   - Coordonnées directes et cliquables grâce à `url_launcher` :
-     - ✉️ **E-mail** : `clementmandey611@gmail.com` (ouvre le client de messagerie).
-     - 📞 **Téléphone** : `0837378179` (lance le composeur téléphonique).
-     - 💬 **WhatsApp Direct** : `0837378179` (ouvre une conversation WhatsApp instantanée).
-     - 🐙 **GitHub** : Lien vers les dépôts et projets.
-     - 💼 **LinkedIn** : Lien vers le profil professionnel.
-   - Bouton de copie rapide dans le presse-papier pour chaque coordonnée.
+- Coordonnées directes et cliquables grâce à `url_launcher` :
+  - ✉️ **E-mail** : `clementmandey611@gmail.com` (ouvre le client de messagerie).
+    - 📞 **Téléphone** : `0837378179` (lance le composeur téléphonique).
+    - 💬 **WhatsApp Direct** : `0837378179` (ouvre une conversation WhatsApp instantanée).
+    - 🐙 **GitHub** : Lien vers les dépôts et projets.
+    - 💼 **LinkedIn** : Lien vers le profil professionnel.
+  - Bouton de copie rapide dans le presse-papier pour chaque coordonnée.
 
 5. **Navigation Ergonomique (`MainScreen`)** :
-   - **NavigationBar** Material 3 en bas pour un passage fluide d'une page à l'autre.
-   - **Drawer latéral** reprenant l'identité visuelle de l'utilisateur avec un bouton de **Déconnexion** sécurisé.
+- **NavigationBar** Material 3 en bas pour un passage fluide d'une page à l'autre.
+  - **Drawer latéral** reprenant l'identité visuelle de l'utilisateur avec un bouton de **Déconnexion** sécurisé.
 
 ---
 
@@ -114,40 +120,3 @@ cv_flutter_magbadi_mandey_clement/
 ├── pictures/                  # Galerie d'images et captures d'écran pour GitHub
 ├── pubspec.yaml               # Dépendances (url_launcher, font_awesome_flutter)
 └── README.md                  # Documentation du projet
-```
-
----
-
-## 🚀 Installation & Exécution
-
-### Prérequis
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version 3.x ou supérieure)
-- Android Studio ou VS Code avec les extensions Flutter/Dart
-- Un appareil Android physique ou un émulateur connecté
-
-### Commandes pour lancer l'application
-
-1. Cloner le dépôt GitHub :
-   ```bash
-   git clone https://github.com/clementmandey/cv_flutter_magbadi_mandey_clement.git
-   cd cv_flutter_magbadi_mandey_clement
-   ```
-
-2. Récupérer les dépendances :
-   ```bash
-   flutter pub get
-   ```
-
-3. Lancer l'application :
-   ```bash
-   flutter run
-   ```
-
----
-
-## 📬 Contact & Informations
-
-- **Nom :** MAGBADI MANDEY CLEMENT
-- **E-mail :** [clementmandey611@gmail.com](mailto:clementmandey611@gmail.com)
-- **Téléphone / WhatsApp :** [+243 837 378 179](https://wa.me/243837378179)
-- **Localisation :** Kinshasa, République Démocratique du Congo (RDC)
